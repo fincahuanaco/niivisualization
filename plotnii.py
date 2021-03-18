@@ -7,13 +7,20 @@ from marching_cubes import march
 from numpy import load
 
 import sys
-   # Change the path to your path
-  #print(max(volume))
+
 def polygonize(volume):
-  binvolume=volume>0.00001
+  print(volume)
+  print(volume.shape)
+  d1,d2,d3=volume.shape
+  values=volume.reshape(d1*d2*d3)
+  print(max(values))
+  print(min(values))
+  binvolume=volume>0.1 #misael
+#  binvolume=volume>100 #syntetic
 # extract the mesh where the values are larger than or equal to 1
 # everything else is ignored
-  vertices, normals, faces = march(binvolume, 4)  # zero smoothing rounds
+  print("MC starting..!")
+  vertices, normals, faces = march(binvolume, 0)  # zero smoothing rounds
 #  smooth_vertices, smooth_normals, faces = march(volume, 4)  # 4 smoothing rounds
   print("MC done..!")
 #  print(vertices,normals,faces)
@@ -31,13 +38,10 @@ def Main(blured):
   with open(sys.argv[2], 'w') as f:
     f.write("# OBJ file\n")
     for v in vertices:
-      print(v)
       f.write("v %.4f %.4f %.4f\n" % (v[0],v[1],v[2]))
     for face in faces:
-      print(face)
       f.write("f %d %d %d\n" % (face[0]+1,face[1]+1,face[2]+1))
     for n in normals:
-      print(n)
       f.write("n %.4f %.4f %.4f\n" % (n[0],n[1],n[2]))
 
   mesh = MeshData(vertices/100 , faces)  # scale down - because camera is at a fixed position 
@@ -61,6 +65,10 @@ if __name__ == "__main__":
   Nifti_img  = nib.load(path)
   nii_data = Nifti_img.get_fdata()
   print(nii_data.shape)
+  if len(nii_data.shape)>3:
+    d1,d2,d3,d4=nii_data.shape
+    nii_data=nii_data.reshape(d1,d2,d3)
   blurred = gaussian_filter(nii_data, sigma=0.5)
+  blurred = gaussian_filter(blurred, sigma=0.5)
   Main(blurred)
 

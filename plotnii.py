@@ -36,9 +36,9 @@ def Main(blured):
     for face in faces:
       print(face)
       f.write("f %d %d %d\n" % (face[0]+1,face[1]+1,face[2]+1))
-    #3for n in normals:
-     # print(n)
-
+    for n in normals:
+      print(n)
+      f.write("n %.4f %.4f %.4f\n" % (n[0],n[1],n[2]))
 
   mesh = MeshData(vertices/100 , faces)  # scale down - because camera is at a fixed position 
 # or mesh = MeshData(smooth_vertices / 100, faces)
